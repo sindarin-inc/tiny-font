@@ -349,6 +349,7 @@ public:
 
                 // Find vertices using the cross product and adjust the distances
                 // to get the right portion of the Convex Hull polygon.
+                // NOLINTNEXTLINE(bugprone-signed-char-misuse,cert-str34-c)
                 int i = distIdxLeft;
                 int j = i + 1;
                 while (j < (i1.bitmapHeight + distIdxLeft)) {
@@ -401,6 +402,7 @@ public:
 
                 // Find vertices using the cross product and adjust the distances
                 // to get the left portion of the Convex Hull polygon.
+                // NOLINTNEXTLINE(bugprone-signed-char-misuse,cert-str34-c)
                 int i = distIdxRight;
                 int j = i + 1;
                 while (j < (i2.bitmapHeight + distIdxRight)) {
@@ -449,6 +451,7 @@ public:
             // as angled pixels (on the lines above and below)
             kerning = MAKE_INT_FIXED(999);
             FIX32 dist;
+            // NOLINTNEXTLINE(bugprone-signed-char-misuse,cert-str34-c)
             for (int i = firstIdx; i < firstIdx + length; i++) {
                 dist = distLeft[i] + distRight[i];
                 if (dist < kerning) {
@@ -658,9 +661,15 @@ public:
 
         if ((glyphCode == SPACE_CODE) ||
             ((*glyphsInfo_)[glyphCode].bitmapWidth == 0)) { // send as a space character
-            appGlyph.metrics.lineHeight = faceHeader_->lineHeight;
-            appGlyph.metrics.advance = (int16_t)faceHeader_->spaceSize << 6;
             appGlyph.pointSize = faceHeader_->pointSize;
+            appGlyph.metrics = {.xoff = 0,
+                                .yoff = 0,
+                                .descent = 0,
+                                .lineHeight = faceHeader_->lineHeight,
+                                .ligatureAndKernPgmIndex = 255};
+            // For some reason, casting this above triggers a narrowing conversion error but it
+            // doesn't here.
+            appGlyph.metrics.advance = (int16_t)faceHeader_->spaceSize << 6;
             return true;
         }
 
