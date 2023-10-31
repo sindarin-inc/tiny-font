@@ -51,8 +51,8 @@ auto IBMFFontLow::load(MemoryPtr fontData, uint32_t length) -> bool {
         data += (((*planes_)[3].codePointBundlesIdx + (*planes_)[3].entriesCount) *
                  sizeof(CodePointBundle));
     } else {
-        planes_ = nullptr;
-        codePointBundles_ = nullptr;
+        LOGE("The font format is not UTF32");
+        return false; // We only support FontFormat::UTF32
     }
 
     // Check for discrepancies
@@ -205,15 +205,16 @@ auto IBMFFontLow::load(MemoryPtr fontData, uint32_t length) -> bool {
     } else if ((codePoint >= 0xFFF0) && (codePoint <= 0xFFFF)) {
         glyphCode = DONT_CARE_CODE;
     } else {
-        // if ((codePoint != 0xA0) && (preamble_->bits.fontFormat == FontFormat::UTF32)) {
         auto planeIdx = static_cast<uint16_t>(codePoint >> 16);
 
         if (planeIdx <= 3) {
             auto u16 = static_cast<char16_t>(codePoint);
 
+            // NOLINTBEGIN(clang-analyzer-core.NullDereference)
             uint16_t codePointBundleIdx = (*planes_)[planeIdx].codePointBundlesIdx;
             uint16_t entriesCount = (*planes_)[planeIdx].entriesCount;
             int gCode = (*planes_)[planeIdx].firstGlyphCode;
+            // NOLINTEND(clang-analyzer-core.NullDereference)
             int i = 0;
             while (i < entriesCount) {
                 if (u16 <= (*codePointBundles_)[codePointBundleIdx].lastCodePoint) {
