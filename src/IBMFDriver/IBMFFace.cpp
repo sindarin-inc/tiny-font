@@ -1,7 +1,10 @@
-#include "IBMFFaceLow.hpp"
+#include "config.h"
 
-auto IBMFFaceLow::load(const MemoryPtr dataStart, const int dataLength, FontFormat fontFmt)
-    -> bool {
+#if CONFIG_FONT_IBMF
+
+#include "IBMFFace.hpp"
+
+auto IBMFFace::load(const MemoryPtr dataStart, const int dataLength, FontFormat fontFmt) -> bool {
 
     MemoryPtr memoryPtr = dataStart;
     MemoryPtr memoryEnd = dataStart + dataLength;
@@ -57,7 +60,7 @@ auto IBMFFaceLow::load(const MemoryPtr dataStart, const int dataLength, FontForm
 /// @param kern Out. When a kerning entry is found in the program, kern will receive the value.
 /// @return True if a ligature was found, false otherwise.
 ///
-auto IBMFFaceLow::ligKern(GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *kern) -> bool {
+auto IBMFFace::ligKern(const GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *kern) -> bool {
 
     if ((glyphCode1 >= faceHeader_->glyphCount) || (*glyphCode2 >= faceHeader_->glyphCount)) {
         *kern = 0;
@@ -97,7 +100,7 @@ auto IBMFFaceLow::ligKern(GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *ke
     }
 
     // TODO: Implement optical kerning for 8-bits resolution (GT)
-    if (resolution_ == PixelResolution::EIGHT_BITS) {
+    if (pixelResolution_ == PixelResolution::EIGHT_BITS) {
         *kern = 1;
         return false;
     }
@@ -423,8 +426,23 @@ auto IBMFFaceLow::ligKern(GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *ke
     return false;
 }
 
-auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap, bool caching,
-                           Pos atPos, bool inverted) -> bool {
+// Get a Glyph from the font.
+//
+// Parameters:
+//
+//   glyphCode  : The index in the font to retrieve the glyph from
+//   appGlyph   : The Glyph structure to put the information in
+//   loadBitmap : If true, the glyph bitmap needs to be retrieved and put in the appGlyph.
+//                If false, no bitmap is retrieved and THE OTHER PARAMETERS ARE IGNORED
+//   caching    : If true (default), a bitmap needs to be allocated and the Glyph bitmap must be put
+//                                   there.
+//                If false, the appGlyph.bitmap already point at the screen bitmap
+//   atPos      : This is the location in the screen bitmap where the
+//                glyph's bitmap must be located, default: [0, 0]
+//   inverted   : If true, the pixels must be put in "reversed video", default:false
+
+auto IBMFFace::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap, bool caching,
+                        Pos atPos, bool inverted) -> bool {
 
     // LOGD("glyphCode: %04x, loadBitmap: %s, caching: %s, pos: [%d, %d]", glyphCode,
     //      loadBitmap ? "YES" : "NO", caching ? "YES" : "NO", atPos.x, atPos.y);
@@ -447,8 +465,7 @@ auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap
             .yoff = 0,
             .descent = 0,
             .advance = static_cast<FIX16>(static_cast<uint16_t>(faceHeader_->spaceSize) << 6),
-            .lineHeight = faceHeader_->lineHeight,
-            .ligatureAndKernPgmIndex = 255};
+            .lineHeight = faceHeader_->lineHeight};
         // For some reason, casting this above triggers a narrowing conversion error but it
         // doesn't here.
         // appGlyph.metrics.advance =
@@ -467,6 +484,8 @@ auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap
     }
 
     Dim dim = Dim(glyphInfo->bitmapWidth, glyphInfo->bitmapHeight);
+    uint8_t pitch =
+        (pixelResolution_ == PixelResolution::ONE_BIT) ? ((dim.width + 7) >> 3) : dim.width;
     Pos glyphOffsets = Pos(0, 0);
 
     glyphOffsets.y = -glyphInfo->verticalOffset;
@@ -476,12 +495,10 @@ auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap
 
     if (loadBitmap) {
         if (caching) {
-            uint16_t size = (resolution_ == PixelResolution::ONE_BIT)
-                                ? dim.height * ((dim.width + 7) >> 3)
-                                : dim.height * dim.width;
+            uint16_t size = dim.height * pitch;
 
             uint8_t white;
-            if (resolution_ == PixelResolution::ONE_BIT) {
+            if (pixelResolution_ == PixelResolution::ONE_BIT) {
                 white = WHITE_ONE_BIT ? 0xFF : 0;
             } else {
                 white = WHITE_EIGHT_BITS;
@@ -491,16 +508,21 @@ auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap
             if (appGlyph.bitmap.pixels == nullptr) {
                 LOGE("Unable to allocate glyph pixel memory of size %d!", size);
                 appGlyph.bitmap.dim = Dim(0, 0);
+                appGlyph.bitmap.pitch = 0;
                 return false;
             }
             memset(appGlyph.bitmap.pixels, white, size);
             appGlyph.bitmap.dim = dim;
+            appGlyph.bitmap.pitch = pitch;
         }
 
-        RLEBitmap glyphBitmap = {.pixels = &(*pixelsPool_)[(*glyphsPixelPoolIndexes_)[glyphCode]],
-                                 .dim = Dim(glyphInfo->bitmapWidth, glyphInfo->bitmapHeight),
-                                 .length = glyphInfo->packetLength};
-        RLEExtractor rle(resolution_);
+        RLEBitmap glyphBitmap = {
+            .pixels = &(*pixelsPool_)[(*glyphsPixelPoolIndexes_)[glyphCode]],
+            .dim = dim,
+            .length = glyphInfo->packetLength,
+            .pitch = pitch,
+        };
+        RLEExtractor rle(pixelResolution_);
 
         Pos outPos = Pos(atPos.x + glyphOffsets.x, atPos.y + glyphOffsets.y);
         // std::cout << "inPos: [" << atPos.x << ", " << atPos.y << "], outPos: [" << outPos.x
@@ -518,21 +540,19 @@ auto IBMFFaceLow::getGlyph(GlyphCode glyphCode, Glyph &appGlyph, bool loadBitmap
                                             ? glyphInfo->bitmapHeight - glyphInfo->verticalOffset
                                             : 0),
         .advance = glyphInfo->advance,
-        .lineHeight = faceHeader_->lineHeight,
-        .ligatureAndKernPgmIndex = glyphInfo->ligKernPgmIndex};
+        .lineHeight = faceHeader_->lineHeight};
 
     // appGlyph.metrics = {
     //     .xoff = (int16_t) - (glyphOffsets.x + ((caching) ? glyphInfo->horizontalOffset : 0)),
     //     .yoff = (int16_t) - (glyphOffsets.y + ((caching) ? glyphInfo->verticalOffset : 0)),
     //     .advance = glyphInfo->advance,
-    //     .lineHeight = faceHeader_->lineHeight,
-    //     .ligatureAndKernPgmIndex = glyphInfo->ligKernPgmIndex};
+    //     .lineHeight = faceHeader_->lineHeight};
 
     // showGlyph(appGlyph, glyphCode & 0xFF);
     return true;
 }
 
-auto IBMFFaceLow::getGlyphMetrics(GlyphCode glyphCode, Glyph &appGlyph) -> bool {
+auto IBMFFace::getGlyphMetrics(GlyphCode glyphCode, Glyph &appGlyph) -> bool {
 
     appGlyph.clear();
 
@@ -545,8 +565,7 @@ auto IBMFFaceLow::getGlyphMetrics(GlyphCode glyphCode, Glyph &appGlyph) -> bool 
             .yoff = 0,
             .descent = 0,
             .advance = static_cast<FIX16>(static_cast<uint16_t>(faceHeader_->spaceSize) << 6),
-            .lineHeight = faceHeader_->lineHeight,
-            .ligatureAndKernPgmIndex = 255};
+            .lineHeight = faceHeader_->lineHeight};
 
         return true;
     }
@@ -568,13 +587,12 @@ auto IBMFFaceLow::getGlyphMetrics(GlyphCode glyphCode, Glyph &appGlyph) -> bool 
                                             ? glyphInfo->bitmapHeight - glyphInfo->verticalOffset
                                             : 0),
         .advance = glyphInfo->advance,
-        .lineHeight = faceHeader_->lineHeight,
-        .ligatureAndKernPgmIndex = glyphInfo->ligKernPgmIndex};
+        .lineHeight = faceHeader_->lineHeight};
 
     return true;
 }
 
-// auto IBMFFaceLow::getGlyphApproxWidth(GlyphCode glyphCode, int16_t *approxWidth) -> bool {
+// auto IBMFFace::getGlyphApproxWidth(GlyphCode glyphCode, int16_t *approxWidth) -> bool {
 
 //     if ((glyphCode == SPACE_CODE) || ((glyphCode < faceHeader_->glyphCount)
 //         ((*glyphsInfo_)[glyphCode].bitmapWidth == 0))) { // send as a space character
@@ -597,7 +615,7 @@ auto IBMFFaceLow::getGlyphMetrics(GlyphCode glyphCode, Glyph &appGlyph) -> bool 
 //     return true;
 // }
 
-auto IBMFFaceLow::showBitmap(const Bitmap &bitmap) const -> void {
+auto IBMFFace::showBitmap(const Bitmap &bitmap) const -> void {
     if constexpr (DEBUG) {
         uint32_t row, col;
         MemoryPtr rowPtr;
@@ -613,7 +631,7 @@ auto IBMFFaceLow::showBitmap(const Bitmap &bitmap) const -> void {
         }
         std::cout << '+' << std::endl << std::flush;
 
-        if (resolution_ == PixelResolution::ONE_BIT) {
+        if (pixelResolution_ == PixelResolution::ONE_BIT) {
             uint32_t rowSize = (bitmap.dim.width + 7) >> 3;
             for (row = 0, rowPtr = bitmap.pixels; row < bitmap.dim.height;
                  row++, rowPtr += rowSize) {
@@ -653,7 +671,7 @@ auto IBMFFaceLow::showBitmap(const Bitmap &bitmap) const -> void {
     }
 }
 
-auto IBMFFaceLow::showGlyph(const Glyph &glyph, GlyphCode glyphCode, char32_t codePoint) const
+auto IBMFFace::showGlyph(const Glyph &glyph, GlyphCode glyphCode, char32_t codePoint) const
     -> void {
     if constexpr (DEBUG) {
         std::cout << "Glyph Base Code: 0x" << std::hex << glyphCode << std::dec << "(" << +codePoint
@@ -671,7 +689,7 @@ auto IBMFFaceLow::showGlyph(const Glyph &glyph, GlyphCode glyphCode, char32_t co
     }
 }
 
-auto IBMFFaceLow::showGlyphInfo(GlyphCode i, const GlyphInfo &g) const -> void {
+auto IBMFFace::showGlyphInfo(GlyphCode i, const GlyphInfo &g) const -> void {
     if constexpr (DEBUG) {
         std::cout << "  [" << i << "]: w: " << +g.bitmapWidth << ", h: " << +g.bitmapHeight
                   << ", hoff: " << +g.horizontalOffset << ", voff: " << +g.verticalOffset
@@ -688,7 +706,7 @@ auto IBMFFaceLow::showGlyphInfo(GlyphCode i, const GlyphInfo &g) const -> void {
     }
 }
 
-auto IBMFFaceLow::showLigKerns() const -> void {
+auto IBMFFace::showLigKerns() const -> void {
     if constexpr (DEBUG) {
         std::cout << std::endl << "----------- Ligature / Kern programs: ----------" << std::endl;
         uint16_t i;
@@ -715,7 +733,7 @@ auto IBMFFaceLow::showLigKerns() const -> void {
     }
 }
 
-auto IBMFFaceLow::showFace() const -> void {
+auto IBMFFace::showFace() const -> void {
     if constexpr (DEBUG) {
 
         std::cout << std::endl << "----------- Face Header: ----------" << std::endl;
@@ -740,3 +758,5 @@ auto IBMFFaceLow::showFace() const -> void {
         showLigKerns();
     }
 }
+
+#endif

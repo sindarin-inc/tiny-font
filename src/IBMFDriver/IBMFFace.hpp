@@ -1,5 +1,9 @@
 #pragma once
 
+#include "config.h"
+
+#if CONFIG_FONT_IBMF
+
 #include <cstring>
 #include <memory>
 #include <new>
@@ -15,14 +19,12 @@ using namespace ibmf_defs;
  * This is a low-level class to allow acces to a IBMF faces generated through METAFONT
  *
  */
-class IBMFFaceLow {
+class IBMFFace {
 
 private:
-    static constexpr char const *TAG = "IBMFFaceLow";
-
     bool initialized_{false};
     FontFormat fontFormat_{FontFormat::UNKNOWN};
-    PixelResolution resolution_{DEFAULT_RESOLUTION};
+    PixelResolution pixelResolution_{DEFAULT_PIXEL_RESOLUTION};
 
     FaceHeaderPtr faceHeader_{nullptr};
     GlyphsPixelPoolIndexes glyphsPixelPoolIndexes_{nullptr};
@@ -31,9 +33,9 @@ private:
     LigKernStepsPtr ligKernSteps_{nullptr};
 
 public:
-    IBMFFaceLow() = default;
+    IBMFFace() = default;
 
-    ~IBMFFaceLow() = default;
+    ~IBMFFace() = default;
 
     inline static auto fromFIX16(FIX16 val) -> float { return static_cast<float>(val) / 64.0; }
     inline static auto toFIX16(float val) -> FIX16 { return static_cast<FIX16>(val * 64.0); }
@@ -55,7 +57,9 @@ public:
     [[nodiscard]] inline auto getLigKernStep(uint16_t idx) const -> LigKernStep * {
         return &(*ligKernSteps_)[idx];
     }
-    [[nodiscard]] inline auto getResolution() const -> PixelResolution { return resolution_; }
+    [[nodiscard]] inline auto getPixelResolution() const -> PixelResolution {
+        return pixelResolution_;
+    }
 
     [[nodiscard]] inline auto getGlyphHOffset(GlyphCode glyphCode) const -> int8_t {
         if (glyphCode >= faceHeader_->glyphCount) {
@@ -80,7 +84,7 @@ public:
                                                      : NO_LIG_KERN_PGM;
     }
 
-    inline auto setResolution(PixelResolution res) -> void { resolution_ = res; }
+    inline auto setPixelResolution(PixelResolution res) -> void { pixelResolution_ = res; }
 
     auto ligKern(GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *kern) -> bool;
 
@@ -129,3 +133,5 @@ public:
         return true;
     }
 };
+
+#endif
