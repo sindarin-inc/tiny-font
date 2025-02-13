@@ -62,10 +62,74 @@ auto Font::ligKern(const GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 *ker
     return res;
 }
 
+/**
+ * @brief Copies a bitmap from one buffer to another with pixel format conversion and inversion
+ * options
+ *
+ * This method copies a bitmap from a source buffer to a destination buffer, handling different
+ * pixel resolutions and format conversions. It supports:
+ * - Font pixel resolutions: 1-bit and 8-bit
+ * - Display pixel resolutions: 1-bit, 8-bit, and 16-bit
+ *
+ * @param to Destination bitmap buffer where the content will be copied
+ * @param from Source bitmap buffer containing the content to copy
+ * @param atPos Position coordinates where to place the bitmap in the destination buffer
+ * @param inverted If true, inverts the pixel values during copy (black becomes white and vice
+ * versa)
+ *
+ * For 1-bit font resolution:
+ * - With 16-bit display: Converts to RGB565 format (0 or 0xFFFF)
+ * - With 8-bit display: Converts to grayscale (0 or 0xFF)
+ * - With 1-bit display: Performs bit-by-bit copy with proper masking
+ *
+ * For 8-bit font resolution:
+ * - With 16-bit display: Converts grayscale to RGB565 format
+ * - With 8-bit display: Direct grayscale copy
+ *
+ * @note The method assumes that the destination buffer has enough space allocated
+ *       to accommodate the source bitmap at the specified position
+ */
 void Font::copyBitmap(Bitmap &to, const Bitmap &from, Pos atPos, bool inverted) {
     if (fontPixelResolution_ == font_defs::PixelResolution::ONE_BIT) {
 
-        if (displayPixelResolution_ == PixelResolution::EIGHT_BITS) {
+        if (displayPixelResolution_ == PixelResolution::SIXTEEN_BITS) {
+            uint16_t data;
+            auto fromPtr = from.pixels;
+            auto toPtr = reinterpret_cast<uint16_t *>(
+                to.pixels + static_cast<size_t>((atPos.y * to.pitch) << 1));
+
+            for (uint16_t fromRow = 0; fromRow < from.dim.height;
+                 fromRow++, toPtr += to.pitch, fromPtr += from.pitch) {
+                int toIdx = atPos.x;
+                int fromIdx = 0;
+                uint16_t fromMask = 0;
+                if (inverted) {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromMask == 0) {
+                            fromMask = 0x8000;
+                            data = fromPtr[fromIdx++];
+                        }
+                        if (data & fromMask) {
+                            toPtr[toIdx] = 0xFFFF;
+                        }
+                        fromMask >>= 1;
+                        toIdx += 1;
+                    }
+                } else {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromMask == 0) {
+                            fromMask = 0x8000;
+                            data = fromPtr[fromIdx++];
+                        }
+                        if (data & fromMask) {
+                            toPtr[toIdx] = 0;
+                        }
+                        fromMask >>= 1;
+                        toIdx += 1;
+                    }
+                }
+            }
+        } else if (displayPixelResolution_ == PixelResolution::EIGHT_BITS) {
             uint8_t data;
             auto fromPtr = from.pixels;
             auto toPtr = to.pixels + static_cast<size_t>(atPos.y * to.pitch);
@@ -148,25 +212,51 @@ void Font::copyBitmap(Bitmap &to, const Bitmap &from, Pos atPos, bool inverted) 
             }
         }
     } else { // Font Resolution EIGHT_BITS
-        auto rowCount = from.dim.height;
-        auto fromPtr = from.pixels;
-        auto toPtr = &to.pixels[to.pitch * atPos.y + atPos.x];
-        while (rowCount-- > 0) {
-            if (inverted) {
-                for (uint16_t i = 0; i < from.dim.width; i++) {
-                    if (fromPtr[i] != 0) {
-                        toPtr[i] = fromPtr[i];
+        if (displayPixelResolution_ == PixelResolution::SIXTEEN_BITS) {
+            auto rowCount = from.dim.height;
+            auto fromPtr = from.pixels;
+            auto toPtr =
+                reinterpret_cast<uint16_t *>(&to.pixels[(to.pitch * atPos.y + atPos.x) << 1]);
+            while (rowCount-- > 0) {
+                if (inverted) {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromPtr[i] != 0) {
+                            toPtr[i] = ((fromPtr[i] & 0xF8) << 8) | ((fromPtr[i] & 0xFC) << 3) |
+                                       (fromPtr[i] >> 3);
+                        }
+                    }
+                } else {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromPtr[i] != 0) {
+                            uint8_t val = 255 - fromPtr[i];
+                            toPtr[i] = ((val & 0xF8) << 8) | ((val & 0xFC) << 3) | (val >> 3);
+                        }
                     }
                 }
-            } else {
-                for (uint16_t i = 0; i < from.dim.width; i++) {
-                    if (fromPtr[i] != 0) {
-                        toPtr[i] = 255 - fromPtr[i];
-                    }
-                }
+                fromPtr += from.pitch;
+                toPtr += to.pitch;
             }
-            fromPtr += from.pitch;
-            toPtr += to.pitch;
+        } else if (displayPixelResolution_ == PixelResolution::EIGHT_BITS) {
+            auto rowCount = from.dim.height;
+            auto fromPtr = from.pixels;
+            auto toPtr = &to.pixels[to.pitch * atPos.y + atPos.x];
+            while (rowCount-- > 0) {
+                if (inverted) {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromPtr[i] != 0) {
+                            toPtr[i] = fromPtr[i];
+                        }
+                    }
+                } else {
+                    for (uint16_t i = 0; i < from.dim.width; i++) {
+                        if (fromPtr[i] != 0) {
+                            toPtr[i] = 255 - fromPtr[i];
+                        }
+                    }
+                }
+                fromPtr += from.pitch;
+                toPtr += to.pitch;
+            }
         }
     }
 }
