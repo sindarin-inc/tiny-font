@@ -26,7 +26,7 @@ target_include_directories(ttf_sdl PRIVATE
 set(FT_DISABLE_PNG ON CACHE BOOL "Disable PNG support in FreeType" FORCE)
 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "Disable HarfBuzz support in FreeType" FORCE)
 set(FT_DISABLE_BROTLI ON CACHE BOOL "Disable Brotli support in FreeType" FORCE)
-add_subdirectory(${TINY_FONT_ROOT}/freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype)
+add_subdirectory(${TINY_FONT_ROOT}/freetype/freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype)
 
 target_link_libraries(ttf_sdl PRIVATE SDL2::SDL2 freetype)
 

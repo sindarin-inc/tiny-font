@@ -16,6 +16,10 @@ class Font;
 class TTFCache {
 private:
 #if CONFIG_USE_SPIRAM
+    template <typename K, typename V>
+    using SpiramMap = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>,
+                                         FontSpiramAllocator<std::pair<const K, V>>>;
+
     SpiramMap<uint32_t, std::shared_ptr<Glyph>> glyphCache_;
 #else
     std::unordered_map<uint32_t, std::shared_ptr<Glyph>> glyphCache_;

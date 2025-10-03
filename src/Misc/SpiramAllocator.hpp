@@ -7,13 +7,13 @@
 #include <esp_heap_caps.h>
 
 template <typename T>
-struct SpiramAllocator {
+struct FontSpiramAllocator {
     using value_type = T;
 
-    SpiramAllocator() = default;
+    FontSpiramAllocator() = default;
 
     template <typename U>
-    SpiramAllocator(const SpiramAllocator<U> &) {}
+    FontSpiramAllocator(const FontSpiramAllocator<U> &) {}
 
     auto allocate(std::size_t n) -> T * {
         // Using a pointer type as T will otherwise raises a warning since a common bug is to use a
@@ -33,9 +33,5 @@ struct SpiramAllocator {
 
     void deallocate(T *p, std::size_t n) { heap_caps_free(reinterpret_cast<void *>(p)); }
 };
-
-template <typename K, typename V>
-using SpiramMap = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>,
-                                     SpiramAllocator<std::pair<const K, V>>>;
 
 #endif

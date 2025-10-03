@@ -1,0 +1,28 @@
+menu "Tiny Font Options"
+
+    choice
+
+        prompt "Font System"
+        default FONT_IBMF
+
+        config FONT_IBMF
+            bool "IBMF 1bpp Sol Sans Font"
+
+        config FONT_TTF
+            bool "TTF Font via FreeType"
+
+    endchoice
+
+    config DISPLAY_PIXEL_RESOLUTION_IS_FIX
+        bool "Display pixel resolution is unchangeable at runtime."
+        default y
+
+    config TTF_SCREEN_RES_PER_INCH
+        int "Screen resolution per inch (for TTF sizing)"
+        default 150
+
+    config USE_SPIRAM
+        bool "Use SPIRAM heap when possible"
+        default y
+
+endmenu

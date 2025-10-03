@@ -8,7 +8,7 @@ auto TTFCache::doGetGlyph(Font &font, font_defs::GlyphCode glyphCode, uint32_t k
     -> std::optional<const font_defs::Glyph *> {
 
 #if CONFIG_USE_SPIRAM
-    SpiramAllocator<font_defs::Glyph> allocator;
+    FontSpiramAllocator<font_defs::Glyph> allocator;
     std::shared_ptr<font_defs::Glyph> glyph = allocator.allocateShared();
 #else
     auto glyph = std::make_shared<font_defs::Glyph>();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <inttypes.h>
 #include <cstdio>
+#include <inttypes.h>
 
 // These are the definitions that are common to both IBMF and TTF Font types
 

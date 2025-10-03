@@ -1,0 +1,4 @@
+## IDF Component Manager Manifest File
+dependencies:
+  freetype:
+    path: ./freetype

@@ -36,7 +36,7 @@ target_compile_definitions(tests_ttf PRIVATE CONFIG_FONT_TTF=1 SIMULATOR=1 CONFI
 set(FT_DISABLE_PNG ON CACHE BOOL "Disable PNG" FORCE)
 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "Disable HarfBuzz" FORCE)
 set(FT_DISABLE_BROTLI ON CACHE BOOL "Disable Brotli" FORCE)
-add_subdirectory(${TINY_FONT_ROOT}/freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype)
+add_subdirectory(${TINY_FONT_ROOT}/freetype/freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype)
 
 target_link_libraries(tests_ttf PRIVATE Catch2 freetype PNG::PNG)
 target_compile_definitions(tests_ttf PRIVATE GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images")
