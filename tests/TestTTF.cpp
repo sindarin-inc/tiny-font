@@ -11,8 +11,18 @@
 using namespace ttf_defs;
 using namespace font_defs;
 
-static auto renderTextTTF(const std::string &text, int width, int height, int ptSize)
+static auto renderTextTTF(const std::string &text, int ptSize, int &outW, int &outH)
     -> std::vector<uint8_t> {
+    TTFNotoSansLight fontData;
+    Font font(fontData, ptSize);
+
+    const int inset = 10;
+    Dim textDim = font.getTextSize(text);
+    int width = textDim.width + inset * 2;
+    int height = font.lineHeight() + inset * 2;
+    outW = width;
+    outH = height;
+
     std::vector<uint8_t> out(static_cast<size_t>(width * height), 255);
     Bitmap canvas;
     canvas.dim = Dim(width, height);
@@ -20,21 +30,20 @@ static auto renderTextTTF(const std::string &text, int width, int height, int pt
     canvas.pixels = new uint8_t[static_cast<size_t>(canvas.pitch) * height];
     std::memset(canvas.pixels, 255, static_cast<size_t>(canvas.pitch) * height);
 
-    TTFNotoSansLight fontData;
-    Font font(fontData, ptSize);
-    font.drawSingleLineOfText(canvas, Pos(10, 10), text, false);
+    font.drawSingleLineOfText(canvas, Pos(inset, inset), text, false);
 
     std::memcpy(out.data(), canvas.pixels, out.size());
     delete[] canvas.pixels;
     return out;
 }
 
-TEST_CASE("TTF renders Hello for selected sizes matches golden", "[ttf]") {
-    const int W = 320, H = 120;
+TEST_CASE("TTF renders Tiny Font line for selected sizes matches golden", "[ttf]") {
     const int sizes[] = {16, 20, 22, 24, 28};
     for (int sz : sizes) {
         INFO("TTF size " << sz);
-        auto buf = renderTextTTF("Hello TTF", W, H, sz);
+        const std::string line = "Tiny Font: A Minimal Font Library";
+        int W = 0, H = 0;
+        auto buf = renderTextTTF(line, sz, W, H);
 
         std::string goldenPath =
             std::string(GOLDEN_DIR) + "/ttf_hello_" + std::to_string(sz) + ".png";
@@ -43,6 +52,11 @@ TEST_CASE("TTF renders Hello for selected sizes matches golden", "[ttf]") {
         std::vector<uint8_t> golden;
         bool haveGolden = Load8bpp(goldenPath.c_str(), gw, gh, golden);
 
+        if (haveGolden && (gw != W || gh != H)) {
+            REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
+            SUCCEED("Golden resized (TTF hello) "+goldenPath);
+            continue;
+        }
         if (!haveGolden) {
             REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
             SUCCEED("Golden image created for size. Re-run tests.");

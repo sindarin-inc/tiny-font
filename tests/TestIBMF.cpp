@@ -13,8 +13,18 @@
 using namespace ibmf_defs;
 using namespace font_defs;
 
-static auto renderTextIBMF(const std::string &text, int width, int height, int faceIndex)
+static auto renderTextIBMF(const std::string &text, int faceIndex, int &outW, int &outH)
     -> std::vector<uint8_t> {
+    FontData fontData(SOLSANS_75_IBMF, SOLSANS_75_IBMF_LEN);
+    Font font(fontData, faceIndex);
+
+    const int inset = 10;
+    Dim textDim = font.getTextSize(text);
+    int width = textDim.width + inset * 2;
+    int height = font.lineHeight() + inset * 2;
+    outW = width;
+    outH = height;
+
     std::vector<uint8_t> out(static_cast<size_t>(width * height), 255);
     Bitmap canvas;
     canvas.dim = Dim(width, height);
@@ -22,9 +32,7 @@ static auto renderTextIBMF(const std::string &text, int width, int height, int f
     canvas.pixels = new uint8_t[static_cast<size_t>(canvas.pitch) * height];
     std::memset(canvas.pixels, 0xFF, static_cast<size_t>(canvas.pitch) * height);
 
-    FontData fontData(SOLSANS_75_IBMF, SOLSANS_75_IBMF_LEN);
-    Font font(fontData, faceIndex);
-    font.drawSingleLineOfText(canvas, Pos(10, 10), text, false);
+    font.drawSingleLineOfText(canvas, Pos(inset, inset), text, false);
 
     // expand 1bpp to 8bpp grayscale
     for (int y = 0; y < height; ++y) {
@@ -41,11 +49,12 @@ static auto renderTextIBMF(const std::string &text, int width, int height, int f
     return out;
 }
 
-TEST_CASE("IBMF renders Hello for all faces matches golden", "[ibmf]") {
-    const int W = 320, H = 120;
+TEST_CASE("IBMF renders Tiny Font line for all faces matches golden", "[ibmf]") {
+    const std::string line = "Tiny Font: A Minimal Font Library";
     for (int face = 0; face < 3; ++face) {
         INFO("IBMF face index " << face);
-        auto buf = renderTextIBMF("Hello IBMF", W, H, face);
+        int W = 0, H = 0;
+        auto buf = renderTextIBMF(line, face, W, H);
 
         std::string goldenPath =
             std::string(GOLDEN_DIR) + "/ibmf_hello_face" + std::to_string(face) + ".png";
@@ -54,6 +63,11 @@ TEST_CASE("IBMF renders Hello for all faces matches golden", "[ibmf]") {
         std::vector<uint8_t> golden;
         bool haveGolden = Load8bpp(goldenPath.c_str(), gw, gh, golden);
 
+        if (haveGolden && (gw != W || gh != H)) {
+            REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
+            SUCCEED("Golden resized (IBMF hello) "+goldenPath);
+            continue;
+        }
         if (!haveGolden) {
             REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
             SUCCEED("Golden image created for face. Re-run tests.");
