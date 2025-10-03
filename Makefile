@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := all
-.PHONY: all tidy tidy-tests tidy-sdl-ibmf tidy-sdl-ttf format format-check test examples-sdl-ibmf examples-sdl-ttf
+.PHONY: all tidy tidy-tests tidy-sdl-ibmf tidy-sdl-ttf format format-check test examples-sdl-ibmf run-examples-sdl-ibmf examples-sdl-ttf run-examples-sdl-ttf
 
 all: test examples-sdl-ibmf examples-sdl-ttf
 
@@ -10,8 +10,14 @@ test:
 examples-sdl-ibmf:
 	@$(MAKE) -C examples/SDL/IBMF build
 
+run-examples-sdl-ibmf:
+	@$(MAKE) -C examples/SDL/IBMF run
+
 examples-sdl-ttf:
 	@$(MAKE) -C examples/SDL/TTF build
+
+run-examples-sdl-ttf:
+	@$(MAKE) -C examples/SDL/TTF run
 
 # Override to your local installation if needed
 CLANG_TIDY_RUN ?= run-clang-tidy

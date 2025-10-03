@@ -33,10 +33,7 @@ target_link_libraries(ttf_sdl PRIVATE SDL2::SDL2 freetype)
 target_compile_definitions(ttf_sdl PRIVATE
     CONFIG_FONT_TTF=1
     CONFIG_FONT_IBMF=0
-    SIMULATOR=1
-    CONFIG_DISPLAY_SIM_8BIT=1
     CONFIG_TTF_SCREEN_RES_PER_INCH=150
     CONFIG_USE_SPIRAM=0
+    CONFIG_PIXEL_RESOLUTION_EIGHT_BIT=1
 )
-
-

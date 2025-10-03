@@ -30,7 +30,5 @@ target_link_libraries(ibmf_sdl PRIVATE SDL2::SDL2)
 
 target_compile_definitions(ibmf_sdl PRIVATE
     CONFIG_FONT_IBMF=1
-    SIMULATOR=1
+    CONFIG_PIXEL_RESOLUTION_ONE_BIT=1
 )
-
-

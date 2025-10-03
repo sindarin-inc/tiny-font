@@ -25,4 +25,23 @@ menu "Tiny Font Options"
         bool "Use SPIRAM heap when possible"
         default y
 
+    choice
+
+        prompt "Default pixel resolution"
+        default PIXEL_RESOLUTION_ONE_BIT
+
+        config PIXEL_RESOLUTION_ONE_BIT
+        bool "1 bit per pixel"
+
+        config PIXEL_RESOLUTION_EIGHT_BIT
+        bool "8 bits per pixel"
+
+        config PIXEL_RESOLUTION_SIXTEEN_BIT
+        bool "16 bits per pixel"
+
+        config PIXEL_RESOLUTION_TWENTY_FOUR_BIT
+        bool "24 bits per pixel"
+
+    endchoice
+
 endmenu

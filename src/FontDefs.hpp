@@ -48,34 +48,19 @@ enum class PixelResolution : uint8_t { ONE_BIT, EIGHT_BITS, SIXTEEN_BITS, TWENTY
 // For the first version of the Sol Reader, only ONE_BIT is available for both Display Screen and
 // Font resolution, for both CONFIG_FONT_IBMF and CONFIG_FONT_TTF
 
-#if SIMULATOR
-#if CONFIG_DISPLAY_SIM_16BIT
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
-#elif CONFIG_DISPLAY_SIM_24BIT
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
-#elif CONFIG_DISPLAY_SIM_8BIT
+
+#if CONFIG_PIXEL_RESOLUTION_EIGHT_BIT
 const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::EIGHT_BITS;
 const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::EIGHT_BITS;
+#elif CONFIG_PIXEL_RESOLUTION_SIXTEEN_BIT
+const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
+const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
+#elif CONFIG_PIXEL_RESOLUTION_TWENTY_FOUR_BIT
+const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
+const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
 #else
 const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::ONE_BIT;
 const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::ONE_BIT;
-#endif
-#else
-#if CONFIG_DISPLAY_ESP32_P4_SEEYA_049
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::TWENTYFOUR_BITS;
-#elif CONFIG_DISPLAY_ESP32_P4_FUNCTION_EV || CONFIG_DISPLAY_ESP32_P4_FUNCTION_EV_R0
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::SIXTEEN_BITS;
-#elif CONFIG_WAVESHARE_8BIT
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::EIGHT_BITS;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::EIGHT_BITS;
-#else
-const constexpr PixelResolution DEFAULT_DISPLAY_PIXEL_RESOLUTION = PixelResolution::ONE_BIT;
-const constexpr PixelResolution DEFAULT_FONT_PIXEL_RESOLUTION = PixelResolution::ONE_BIT;
-#endif
 #endif
 
 const constexpr bool PIXEL_RESOLUTION_OK =
@@ -87,14 +72,6 @@ const constexpr bool PIXEL_RESOLUTION_OK =
 #if CONFIG_FONT_IBMF
 static_assert(DEFAULT_FONT_PIXEL_RESOLUTION == PixelResolution::ONE_BIT,
               "For CONFIG_FONT_IBMF, the DEFAULT_FONT_PIXEL_RESOLUTION must be equal to ONE_BIT!");
-#endif
-
-#if !SIMULATOR && !CONFIG_WAVESHARE_8BIT && !CONFIG_DISPLAY_ESP32_P4_FUNCTION_EV &&                \
-    !CONFIG_DISPLAY_ESP32_P4_FUNCTION_EV_R0 && !CONFIG_DISPLAY_ESP32_P4_SEEYA_049
-static_assert(DEFAULT_DISPLAY_PIXEL_RESOLUTION == PixelResolution::ONE_BIT,
-              "The first version of Sol Reader only supports an ONE_BIT display!");
-static_assert(DEFAULT_FONT_PIXEL_RESOLUTION == PixelResolution::ONE_BIT,
-              "The first version of Sol Reader only supports ONE_BIT font!");
 #endif
 
 static_assert(

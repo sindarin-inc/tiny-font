@@ -17,9 +17,13 @@ find_package(PNG REQUIRED)
 
 add_executable(tests_ibmf ${CMAKE_CURRENT_LIST_DIR}/TestIBMF.cpp ${CMAKE_CURRENT_LIST_DIR}/ImageIO.cpp)
 target_include_directories(tests_ibmf PRIVATE ${TINY_FONT_ROOT}/src ${TINY_FONT_ROOT}/src/UI/Fonts ${CMAKE_CURRENT_LIST_DIR})
-target_compile_definitions(tests_ibmf PRIVATE CONFIG_FONT_IBMF=1 SIMULATOR=1)
 target_link_libraries(tests_ibmf PRIVATE Catch2 PNG::PNG)
-target_compile_definitions(tests_ibmf PRIVATE GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images")
+target_compile_definitions(tests_ibmf PRIVATE
+    GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images"
+    CONFIG_FONT_IBMF=1
+    CONFIG_PIXEL_RESOLUTION_ONE_BIT=1
+    CONFIG_USE_SPIRAM=0
+)
 target_sources(tests_ibmf PRIVATE
     ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFont.cpp
     ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFontData.cpp
@@ -30,8 +34,6 @@ add_test(NAME ibmf_render COMMAND tests_ibmf)
 
 add_executable(tests_ttf ${CMAKE_CURRENT_LIST_DIR}/TestTTF.cpp ${CMAKE_CURRENT_LIST_DIR}/ImageIO.cpp)
 target_include_directories(tests_ttf PRIVATE ${TINY_FONT_ROOT}/src ${TINY_FONT_ROOT}/src/UI/Fonts ${CMAKE_CURRENT_LIST_DIR})
-target_compile_definitions(tests_ttf PRIVATE CONFIG_FONT_TTF=1 SIMULATOR=1 CONFIG_DISPLAY_SIM_8BIT=1 CONFIG_TTF_SCREEN_RES_PER_INCH=150 CONFIG_USE_SPIRAM=0)
-
 # Vendor freetype for TTF tests
 set(FT_DISABLE_PNG ON CACHE BOOL "Disable PNG" FORCE)
 set(FT_DISABLE_HARFBUZZ ON CACHE BOOL "Disable HarfBuzz" FORCE)
@@ -39,7 +41,13 @@ set(FT_DISABLE_BROTLI ON CACHE BOOL "Disable Brotli" FORCE)
 add_subdirectory(${TINY_FONT_ROOT}/freetype/freetype ${CMAKE_CURRENT_BINARY_DIR}/freetype)
 
 target_link_libraries(tests_ttf PRIVATE Catch2 freetype PNG::PNG)
-target_compile_definitions(tests_ttf PRIVATE GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images")
+target_compile_definitions(tests_ttf PRIVATE
+    GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images"
+    CONFIG_FONT_TTF=1
+    CONFIG_PIXEL_RESOLUTION_EIGHT_BIT=1
+    CONFIG_TTF_SCREEN_RES_PER_INCH=150
+    CONFIG_USE_SPIRAM=0
+)
 target_sources(tests_ttf PRIVATE
     ${TINY_FONT_ROOT}/src/TTFDriver/TTFFont.cpp
     ${TINY_FONT_ROOT}/src/TTFDriver/TTFFontData.cpp

@@ -3,8 +3,6 @@
 #include "Font.hpp"
 #include "FontEntry.hpp"
 
-extern std::array<FontEntry, 1> fontsList;
-
 #if CONFIG_FONT_IBMF
 #include "IBMFDriver/IBMFFont.hpp"
 #include "IBMFDriver/IBMFFontData.hpp"
@@ -16,10 +14,6 @@ extern std::array<FontEntry, 1> fontsList;
 // All the fonts are instanciated in Fonts.cpp
 
 extern FontData ibmf75;
-
-extern Font fontFace0;
-extern Font fontFace1;
-extern Font fontFace2;
 
 #endif
 
@@ -35,9 +29,5 @@ extern Font fontFace2;
 // All the fonts are instanciated in Fonts.cpp
 
 extern TTFNotoSansLight mainFont;
-
-extern Font fontFace0;
-extern Font fontFace1;
-extern Font fontFace2;
 
 #endif
