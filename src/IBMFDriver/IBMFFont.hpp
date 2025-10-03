@@ -5,9 +5,9 @@
 #include <cstdio>
 #include <functional>
 
-#include "IBMFFontData.hpp"
 #include "../Font.hpp"
 #include "../UTF8Iterator.hpp"
+#include "IBMFFontData.hpp"
 
 class Font {
 private:

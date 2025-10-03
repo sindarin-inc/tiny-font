@@ -5,9 +5,9 @@
 #include <memory>
 #include <optional>
 
+#include "../FontDefs.hpp"
 #include "../Misc/SpiramAllocator.hpp"
 #include "TTFDefs.hpp"
-#include "../FontDefs.hpp"
 
 using namespace font_defs;
 

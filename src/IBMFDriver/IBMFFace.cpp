@@ -110,7 +110,7 @@ auto IBMFFace::ligKern(const GlyphCode glyphCode1, GlyphCode *glyphCode2, FIX16 
 #define FRACT_BITS 10
 #define FIXED_POINT_ONE (1 << FRACT_BITS)
 #define MAKE_INT_FIXED(x) (static_cast<FIX32>((x) << FRACT_BITS))
-#define MAKE_FLOAT_FIXED(x) (static_cast<FIX32>((x)*FIXED_POINT_ONE))
+#define MAKE_FLOAT_FIXED(x) (static_cast<FIX32>((x) * FIXED_POINT_ONE))
 #define MAKE_FIXED_INT(x) ((x) >> FRACT_BITS)
 #define MAKE_FIXED_FLOAT(x) ((static_cast<float>(x)) / FIXED_POINT_ONE)
 

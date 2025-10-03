@@ -5,10 +5,10 @@
 #include <cstdio>
 #include <functional>
 
-#include "TTFDefs.hpp"
-#include "TTFFontData.hpp"
 #include "../Font.hpp"
 #include "../UTF8Iterator.hpp"
+#include "TTFDefs.hpp"
+#include "TTFFontData.hpp"
 
 class Font {
 private:

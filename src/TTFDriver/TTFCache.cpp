@@ -46,7 +46,7 @@ void TTFCache::clear() {
 
 void TTFCache::showStats() const {
     LOGI("Glyphs' cache statistics: hits: %" PRIu32 ", misses: %" PRIu32 ".", hitCount_,
-          missCount_);
+         missCount_);
 }
 
 void TTFCache::showBitmap(const Bitmap &bitmap, bool inverted,

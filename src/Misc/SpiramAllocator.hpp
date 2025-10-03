@@ -34,7 +34,6 @@ struct SpiramAllocator {
     void deallocate(T *p, std::size_t n) { heap_caps_free(reinterpret_cast<void *>(p)); }
 };
 
-
 template <typename K, typename V>
 using SpiramMap = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>,
                                      SpiramAllocator<std::pair<const K, V>>>;
