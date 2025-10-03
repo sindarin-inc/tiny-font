@@ -1,6 +1,6 @@
 #pragma once
 
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 
 #include <cstdio>
 #include <functional>
@@ -125,7 +125,7 @@ public:
     auto getGlyphForCache(GlyphCode glyphCode, Glyph &glyph) -> bool;
 
     [[nodiscard]] inline auto setDisplayPixelResolution(PixelResolution res) -> bool {
-#if CONFIG_DISPLAY_PIXEL_RESOLUTION_IS_FIX
+#if CONFIG_TINYFONT_PIXEL_RESOLUTION_IS_FIX
         LOGW("The display does not allow to change it's pixel resolution!");
         return false;
 #else

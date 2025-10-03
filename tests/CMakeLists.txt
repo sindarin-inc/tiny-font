@@ -20,9 +20,9 @@ target_include_directories(tests_ibmf PRIVATE ${TINY_FONT_ROOT}/src ${TINY_FONT_
 target_link_libraries(tests_ibmf PRIVATE Catch2 PNG::PNG)
 target_compile_definitions(tests_ibmf PRIVATE
     GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images"
-    CONFIG_FONT_IBMF=1
-    CONFIG_PIXEL_RESOLUTION_ONE_BIT=1
-    CONFIG_USE_SPIRAM=0
+    CONFIG_TINYFONT_IBMF=1
+    CONFIG_TINYFONT_PIXEL_RESOLUTION_ONE_BIT=1
+    CONFIG_TINYFONT_USE_SPIRAM=0
 )
 target_sources(tests_ibmf PRIVATE
     ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFont.cpp
@@ -43,10 +43,10 @@ add_subdirectory(${TINY_FONT_ROOT}/freetype/freetype ${CMAKE_CURRENT_BINARY_DIR}
 target_link_libraries(tests_ttf PRIVATE Catch2 freetype PNG::PNG)
 target_compile_definitions(tests_ttf PRIVATE
     GOLDEN_DIR="${CMAKE_CURRENT_LIST_DIR}/Images"
-    CONFIG_FONT_TTF=1
-    CONFIG_PIXEL_RESOLUTION_EIGHT_BIT=1
-    CONFIG_TTF_SCREEN_RES_PER_INCH=150
-    CONFIG_USE_SPIRAM=0
+    CONFIG_TINYFONT_TTF=1
+    CONFIG_TINYFONT_PIXEL_RESOLUTION_EIGHT_BIT=1
+    CONFIG_TINYFONT_DISPLAY_DPI=150
+    CONFIG_TINYFONT_USE_SPIRAM=0
 )
 target_sources(tests_ttf PRIVATE
     ${TINY_FONT_ROOT}/src/TTFDriver/TTFFont.cpp

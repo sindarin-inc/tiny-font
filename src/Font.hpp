@@ -1,10 +1,10 @@
 #pragma once
 
-#if CONFIG_FONT_IBMF
+#if CONFIG_TINYFONT_IBMF
 #include "IBMFDriver/IBMFFont.hpp"
 #endif
 
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 #include "TTFDriver/TTFFont.hpp"
 #endif
 

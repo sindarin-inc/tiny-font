@@ -3,43 +3,44 @@ menu "Tiny Font Options"
     choice
 
         prompt "Font System"
-        default FONT_IBMF
+        default TINYFONT_IBMF
 
-        config FONT_IBMF
+        config TINYFONT_IBMF
             bool "IBMF 1bpp Sol Sans Font"
 
-        config FONT_TTF
+        config TINYFONT_TTF
             bool "TTF Font via FreeType"
 
     endchoice
 
-    config DISPLAY_PIXEL_RESOLUTION_IS_FIX
-        bool "Display pixel resolution is unchangeable at runtime."
-        default y
-
-    config TTF_SCREEN_RES_PER_INCH
+    config TINYFONT_DISPLAY_DPI
         int "Screen resolution per inch (for TTF sizing)"
+        depends on TINYFONT_TTF
         default 150
 
-    config USE_SPIRAM
+    config TINYFONT_USE_SPIRAM
         bool "Use SPIRAM heap when possible"
+        default y
+
+    config TINYFONT_PIXEL_RESOLUTION_IS_FIX
+        bool "Display pixel resolution is unchangeable at runtime."
         default y
 
     choice
 
         prompt "Default pixel resolution"
-        default PIXEL_RESOLUTION_ONE_BIT
+        default TINYFONT_PIXEL_RESOLUTION_ONE_BIT
 
-        config PIXEL_RESOLUTION_ONE_BIT
+        config TINYFONT_PIXEL_RESOLUTION_ONE_BIT
         bool "1 bit per pixel"
 
-        config PIXEL_RESOLUTION_EIGHT_BIT
+        config TINYFONT_PIXEL_RESOLUTION_EIGHT_BIT
         bool "8 bits per pixel"
 
-        config PIXEL_RESOLUTION_SIXTEEN_BIT
+        config TINYFONT_PIXEL_RESOLUTION_SIXTEEN_BIT
         bool "16 bits per pixel"
 
-        config PIXEL_RESOLUTION_TWENTY_FOUR_BIT
+        config TINYFONT_PIXEL_RESOLUTION_TWENTY_FOUR_BIT
         bool "24 bits per pixel"
 
     endchoice

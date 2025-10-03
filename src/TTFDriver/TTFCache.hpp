@@ -1,6 +1,6 @@
 #pragma once
 
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 
 #include <memory>
 #include <optional>
@@ -15,7 +15,7 @@ class Font;
 
 class TTFCache {
 private:
-#if CONFIG_USE_SPIRAM
+#if CONFIG_TINYFONT_USE_SPIRAM
     template <typename K, typename V>
     using SpiramMap = std::unordered_map<K, V, std::hash<K>, std::equal_to<K>,
                                          FontSpiramAllocator<std::pair<const K, V>>>;

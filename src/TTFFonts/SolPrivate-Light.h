@@ -13,7 +13,7 @@
 #include <cstdint>
 #include <utility>
 
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 
 const struct {
     const std::array<uint8_t, 2212> data_ = {

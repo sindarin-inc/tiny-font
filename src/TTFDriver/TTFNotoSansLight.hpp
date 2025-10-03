@@ -1,6 +1,6 @@
 #pragma once
 
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 
 #include "../TTFFonts/NotoSans-Light.h"
 #include "../TTFFonts/SolPrivate-Light.h"

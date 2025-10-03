@@ -1,4 +1,4 @@
-#if CONFIG_FONT_IBMF
+#if CONFIG_TINYFONT_IBMF
 
 #include "IBMFFace.hpp"
 

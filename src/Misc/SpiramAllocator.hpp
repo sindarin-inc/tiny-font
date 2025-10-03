@@ -3,7 +3,7 @@
 #include <memory>
 #include <unordered_map>
 
-#if CONFIG_USE_SPIRAM
+#if CONFIG_TINYFONT_USE_SPIRAM
 #include <esp_heap_caps.h>
 
 template <typename T>

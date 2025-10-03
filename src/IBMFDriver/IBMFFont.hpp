@@ -1,6 +1,6 @@
 #pragma once
 
-#if CONFIG_FONT_IBMF
+#if CONFIG_TINYFONT_IBMF
 
 #include <cstdio>
 #include <functional>
@@ -51,7 +51,7 @@ public:
     }
 
     inline auto setDisplayPixelResolution(PixelResolution res) -> bool {
-#if CONFIG_DISPLAY_PIXEL_RESOLUTION_IS_FIX
+#if CONFIG_TINYFONT_PIXEL_RESOLUTION_IS_FIX
         LOGW("The display does not allow to change it's pixel resolution!");
         return false;
 #else

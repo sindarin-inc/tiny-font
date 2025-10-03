@@ -1,4 +1,4 @@
-#if CONFIG_FONT_TTF
+#if CONFIG_TINYFONT_TTF
 
 #include "TTFFont.hpp"
 
@@ -382,7 +382,7 @@ auto Font::getGlyphForCache(GlyphCode glyphCode, Glyph &glyph) -> bool {
     uint16_t size = dim.height * glyph.bitmap.pitch;
 
     if (size > 0) {
-#if CONFIG_USE_SPIRAM
+#if CONFIG_TINYFONT_USE_SPIRAM
         glyph.bitmap.pixels =
             static_cast<font_defs::MemoryPtr>(heap_caps_malloc(size, MALLOC_CAP_SPIRAM));
 #else
