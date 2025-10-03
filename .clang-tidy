@@ -45,6 +45,8 @@
 #   -cppcoreguidelines-avoid-const-or-ref-data-members,
 # This means you can't use arrays (even std::array) by indexing into it
 #   -cppcoreguidelines-pro-bounds-constant-array-index,
+# This library likes pointer arithmetic
+#   -cppcoreguidelines-pro-bounds-pointer-arithmetic,
 
 # This does a decent job of replacing c-style casts and is the only google check that made sense as of clang-tidy 15
 #   google-readability-casting,
@@ -111,6 +113,7 @@ Checks: >-
   -cppcoreguidelines-avoid-do-while,
   -cppcoreguidelines-avoid-const-or-ref-data-members,
   -cppcoreguidelines-pro-bounds-constant-array-index,
+  -cppcoreguidelines-pro-bounds-pointer-arithmetic,
   google-readability-casting,
   misc-*,
   -misc-const-correctness,

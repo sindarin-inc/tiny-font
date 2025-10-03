@@ -1,16 +1,14 @@
 #define CATCH_CONFIG_MAIN
-#include "Catch2/catch_amalgamated.hpp"
-
 #include <cstdio>
 #include <string>
 #include <vector>
 
+#include "Catch2/catch_amalgamated.hpp"
+#include "Font.hpp"
+#include "IBMFDriver/IBMFFontData.hpp"
+#include "IBMFFonts/SolSans_75.h"
 #include "ImageIO.hpp"
 #include "TestHelpers.hpp"
-
-#include "IBMFDriver/IBMFFontData.hpp"
-#include "Font.hpp"
-#include "IBMFFonts/SolSans_75.h"
 
 using namespace ibmf_defs;
 using namespace font_defs;
@@ -49,7 +47,8 @@ TEST_CASE("IBMF renders Hello for all faces matches golden", "[ibmf]") {
         INFO("IBMF face index " << face);
         auto buf = renderTextIBMF("Hello IBMF", W, H, face);
 
-        std::string goldenPath = std::string(GOLDEN_DIR) + "/ibmf_hello_face" + std::to_string(face) + ".png";
+        std::string goldenPath =
+            std::string(GOLDEN_DIR) + "/ibmf_hello_face" + std::to_string(face) + ".png";
 
         int gw = 0, gh = 0;
         std::vector<uint8_t> golden;
@@ -149,14 +148,22 @@ TEST_CASE("IBMF glyph grids for multiple blocks", "[ibmf][glyphs]") {
     const char *digits = "0123456789";
     const char *low = "abcdefghijklmnopqrstuvwxyz";
     const char *up = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    for (const char *p = digits; *p; ++p) glyphsBasic.emplace_back(std::string(1, *p));
-    for (const char *p = low; *p; ++p) glyphsBasic.emplace_back(std::string(1, *p));
-    for (const char *p = up; *p; ++p) glyphsBasic.emplace_back(std::string(1, *p));
+    for (const char *p = digits; *p; ++p) {
+        glyphsBasic.emplace_back(std::string(1, *p));
+    }
+    for (const char *p = low; *p; ++p) {
+        glyphsBasic.emplace_back(std::string(1, *p));
+    }
+    for (const char *p = up; *p; ++p) {
+        glyphsBasic.emplace_back(std::string(1, *p));
+    }
 
     std::vector<std::string> pairs;
     pairs.reserve(glyphsBasic.size() * glyphsBasic.size());
     for (const auto &g1 : glyphsBasic) {
-        for (const auto &g2 : glyphsBasic) pairs.push_back(g1 + g2);
+        for (const auto &g2 : glyphsBasic) {
+            pairs.push_back(g1 + g2);
+        }
     }
 
     blocks.emplace_back("pairs", std::move(pairs));

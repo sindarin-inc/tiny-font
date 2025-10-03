@@ -1,14 +1,12 @@
 #define CATCH_CONFIG_MAIN
-#include "Catch2/catch_amalgamated.hpp"
-
 #include <string>
 #include <vector>
 
-#include "ImageIO.hpp"
-#include "TestHelpers.hpp"
-
-#include "TTFDriver/TTFNotoSansLight.hpp"
+#include "Catch2/catch_amalgamated.hpp"
 #include "Font.hpp"
+#include "ImageIO.hpp"
+#include "TTFDriver/TTFNotoSansLight.hpp"
+#include "TestHelpers.hpp"
 
 using namespace ttf_defs;
 using namespace font_defs;
@@ -38,7 +36,8 @@ TEST_CASE("TTF renders Hello for selected sizes matches golden", "[ttf]") {
         INFO("TTF size " << sz);
         auto buf = renderTextTTF("Hello TTF", W, H, sz);
 
-        std::string goldenPath = std::string(GOLDEN_DIR) + "/ttf_hello_" + std::to_string(sz) + ".png";
+        std::string goldenPath =
+            std::string(GOLDEN_DIR) + "/ttf_hello_" + std::to_string(sz) + ".png";
 
         int gw = 0, gh = 0;
         std::vector<uint8_t> golden;
@@ -76,7 +75,8 @@ static auto codePointToUtf8(int code) -> std::string {
 static auto generateGlyphsInRange(int start, int end) -> std::vector<std::string> {
     std::vector<std::string> glyphs;
     glyphs.reserve(static_cast<size_t>(end - start + 1));
-    for (int code = start; code <= end; ++code) glyphs.push_back(codePointToUtf8(code));
+    for (int code = start; code <= end; ++code)
+        glyphs.push_back(codePointToUtf8(code));
     return glyphs;
 }
 
