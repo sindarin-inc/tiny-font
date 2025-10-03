@@ -6,6 +6,20 @@
 
 namespace font_defs {
 
+#include <cstdio>
+#ifndef LOGI
+#define LOGI(format, ...) std::printf("INFO: " format "\n", ##__VA_ARGS__)
+#endif
+#ifndef LOGW
+#define LOGW(format, ...) std::printf("WARNING: " format "\n", ##__VA_ARGS__)
+#endif
+#ifndef LOGE
+#define LOGE(format, ...) std::printf("ERROR: " format "\n", ##__VA_ARGS__)
+#endif
+#ifndef LOGD
+#define LOGD(format, ...) std::printf("DEBUG: " format "\n", ##__VA_ARGS__)
+#endif
+
 struct Dim {
     int16_t width;
     int16_t height;

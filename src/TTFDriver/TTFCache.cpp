@@ -7,21 +7,23 @@
 auto TTFCache::doGetGlyph(Font &font, font_defs::GlyphCode glyphCode, uint32_t key)
     -> std::optional<const font_defs::Glyph *> {
 
-    // auto glyph = new font_defs::Glyph();
-    auto allocator = SpiramAllocator<font_defs::Glyph>();
+#if CONFIG_USE_SPIRAM
+    SpiramAllocator<font_defs::Glyph> allocator;
     std::shared_ptr<font_defs::Glyph> glyph = allocator.allocateShared();
+#else
+    auto glyph = std::make_shared<font_defs::Glyph>();
+#endif
 
     if (glyph == nullptr) {
         clear();
-        glyph = allocator.allocateShared();
 
         if (glyph == nullptr) {
-            log_e("Unable to allocate SPIRAM memory for a glyph.");
+            LOGE("Unable to allocate memory for a glyph.");
         }
     }
 
     if (font.getGlyphForCache(glyphCode, *glyph)) {
-        glyphCache_.insert({key, glyph});
+        glyphCache_.emplace(key, glyph);
         missCount_++;
         // showBitmap(glyph->bitmap, false, font.getFontPixelResolution());
         return glyph.get();
@@ -39,11 +41,11 @@ void TTFCache::clear() {
     }
     glyphCache_.clear();
     hitCount_ = missCount_ = 0;
-    log_i("Glyphs' cache cleared.");
+    LOGI("Glyphs' cache cleared.");
 }
 
 void TTFCache::showStats() const {
-    log_i("Glyphs' cache statistics: hits: %" PRIu32 ", misses: %" PRIu32 ".", hitCount_,
+    LOGI("Glyphs' cache statistics: hits: %" PRIu32 ", misses: %" PRIu32 ".", hitCount_,
           missCount_);
 }
 

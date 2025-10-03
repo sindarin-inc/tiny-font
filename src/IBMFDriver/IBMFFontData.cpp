@@ -237,7 +237,7 @@ auto FontData::load(MemoryPtr fontData, uint32_t length) -> bool {
     // The following test could generates many entries in the log, depending on the quantity of
     // unknown code points received to be translated. Could be removed or disabled if required.
     if ((codePoint != UNKNOWN_CODEPOINT) && (glyphCode == unknownGlyphCode_)) {
-        log_w("Unknown Code Point received: U+%05" PRIx32, uint32_t(codePoint));
+        LOGW("Unknown Code Point received: U+%05" PRIx32, uint32_t(codePoint));
     }
 
     return glyphCode;

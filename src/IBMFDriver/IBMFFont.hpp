@@ -6,8 +6,8 @@
 #include <functional>
 
 #include "IBMFFontData.hpp"
-#include "UI/Fonts/Font.hpp"
-#include "UI/Fonts/UTF8Iterator.hpp"
+#include "../Font.hpp"
+#include "../UTF8Iterator.hpp"
 
 class Font {
 private:
@@ -52,7 +52,7 @@ public:
 
     inline auto setDisplayPixelResolution(PixelResolution res) -> bool {
 #if CONFIG_DISPLAY_PIXEL_RESOLUTION_IS_FIX
-        log_w("The display does not allow to change it's pixel resolution!");
+        LOGW("The display does not allow to change it's pixel resolution!");
         return false;
 #else
 
@@ -105,7 +105,7 @@ public:
         int16_t width = 0;
         auto face = fontData_->getFace(faceIndex_);
 
-        // log_w("word: %s", buffer);
+        // LOGW("word: %s", buffer);
 
         while (*buffer) {
             int16_t xoff;
@@ -117,7 +117,7 @@ public:
                     (*buffer == '\0') ? (face->getGlyphWidth(glyphCode) - xoff) : (advance >> 6);
             }
         }
-        // log_w(" width: %" PRIi16, width);
+        // LOGW(" width: %" PRIi16, width);
         return width;
     }
 };

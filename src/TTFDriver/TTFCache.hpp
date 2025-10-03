@@ -5,9 +5,9 @@
 #include <memory>
 #include <optional>
 
-#include "Misc/SpiramAllocator.hpp"
+#include "../Misc/SpiramAllocator.hpp"
 #include "TTFDefs.hpp"
-#include "UI/Fonts/FontDefs.hpp"
+#include "../FontDefs.hpp"
 
 using namespace font_defs;
 
@@ -15,7 +15,11 @@ class Font;
 
 class TTFCache {
 private:
+#if CONFIG_USE_SPIRAM
     SpiramMap<uint32_t, std::shared_ptr<Glyph>> glyphCache_;
+#else
+    std::unordered_map<uint32_t, std::shared_ptr<Glyph>> glyphCache_;
+#endif
     uint32_t hitCount_ = 0;
     uint32_t missCount_ = 0;
 

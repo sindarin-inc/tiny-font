@@ -3,7 +3,7 @@
 #include "TTFFont.hpp"
 
 #include <algorithm>
-#include <esp_heap_caps.h>
+#include <cstdlib>
 #include <execution>
 #include <optional>
 
@@ -382,8 +382,12 @@ auto Font::getGlyphForCache(GlyphCode glyphCode, Glyph &glyph) -> bool {
     uint16_t size = dim.height * glyph.bitmap.pitch;
 
     if (size > 0) {
+#if CONFIG_USE_SPIRAM
         glyph.bitmap.pixels =
             static_cast<font_defs::MemoryPtr>(heap_caps_malloc(size, MALLOC_CAP_SPIRAM));
+#else
+        glyph.bitmap.pixels = static_cast<font_defs::MemoryPtr>(malloc(size));
+#endif
         if (glyph.bitmap.pixels == nullptr) {
             LOGE("Unable to allocate glyph pixel memory of size %d!", size);
             glyph.bitmap.dim = Dim(0, 0);

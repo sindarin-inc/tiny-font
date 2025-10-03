@@ -7,8 +7,8 @@
 
 #include "TTFDefs.hpp"
 #include "TTFFontData.hpp"
-#include "UI/Fonts/Font.hpp"
-#include "UI/Fonts/UTF8Iterator.hpp"
+#include "../Font.hpp"
+#include "../UTF8Iterator.hpp"
 
 class Font {
 private:
@@ -126,7 +126,7 @@ public:
 
     [[nodiscard]] inline auto setDisplayPixelResolution(PixelResolution res) -> bool {
 #if CONFIG_DISPLAY_PIXEL_RESOLUTION_IS_FIX
-        log_w("The display does not allow to change it's pixel resolution!");
+        LOGW("The display does not allow to change it's pixel resolution!");
         return false;
 #else
         if (initialized_) {
@@ -152,7 +152,7 @@ public:
             if (fontPixelResolution_ != res) {
                 if ((res == PixelResolution::EIGHT_BITS) &&
                     (displayPixelResolution_ != PixelResolution::EIGHT_BITS)) {
-                    log_e(
+                    LOGE(
                         "Cannot set font resolution to EIGHT_BITS if the display resolution is not "
                         "EIGHT_BITS!");
                 } else {

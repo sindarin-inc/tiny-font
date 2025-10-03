@@ -42,73 +42,73 @@ auto Utf8Substr(const std::string &str, unsigned int start, size_t leng) -> std:
     return str.substr(min, max);
 }
 
-auto TruncateStringToFitBinarySearchImpl(DisplaySystem &display, Font *font, const std::string &str,
-                                         uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
-    uint16_t w, h;
+// auto TruncateStringToFitBinarySearchImpl(DisplaySystem &display, Font *font, const std::string &str,
+//                                          uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
+//     uint16_t w, h;
 
-    // Unicode ellipsis character
-    const std::string ellipsis = "…"; // Unicode ellipsis character
-    uint16_t ellipsisWidth, ellipsisHeight;
-    display.getTextSize(ellipsis, &ellipsisWidth, &ellipsisHeight, font);
+//     // Unicode ellipsis character
+//     const std::string ellipsis = "…"; // Unicode ellipsis character
+//     uint16_t ellipsisWidth, ellipsisHeight;
+//     display.getTextSize(ellipsis, &ellipsisWidth, &ellipsisHeight, font);
 
-    int left = 0;
-    int right = str.size() - 1;
-    int charsToShow = 0;
+//     int left = 0;
+//     int right = str.size() - 1;
+//     int charsToShow = 0;
 
-    while (left <= right) {
-        int mid = left + (right - left) / 2;
-        display.getTextSize(Utf8Substr(str, 0, mid + 1), &w, &h, font);
-        int currentWidth = w;
+//     while (left <= right) {
+//         int mid = left + (right - left) / 2;
+//         display.getTextSize(Utf8Substr(str, 0, mid + 1), &w, &h, font);
+//         int currentWidth = w;
 
-        if (currentWidth + ellipsisWidth <= maxWidth) {
-            left = mid + 1;
-            charsToShow = left;
-        } else {
-            right = mid - 1;
-        }
-    }
+//         if (currentWidth + ellipsisWidth <= maxWidth) {
+//             left = mid + 1;
+//             charsToShow = left;
+//         } else {
+//             right = mid - 1;
+//         }
+//     }
 
-    return Utf8Substr(str, 0, charsToShow) + ellipsis;
-}
+//     return Utf8Substr(str, 0, charsToShow) + ellipsis;
+// }
 
-// Truncate string by estimating the cut point and iterating from there
-auto TruncateStringToFitEstimateImpl(DisplaySystem &display, Font *font, const std::string &str,
-                                     uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
-    uint16_t w, h;
+// // Truncate string by estimating the cut point and iterating from there
+// auto TruncateStringToFitEstimateImpl(DisplaySystem &display, Font *font, const std::string &str,
+//                                      uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
+//     uint16_t w, h;
 
-    const std::string ellipsis = "…"; // Unicode ellipsis character
-    uint16_t ellipsisWidth, ellipsisHeight;
-    display.getTextSize(ellipsis, &ellipsisWidth, &ellipsisHeight, font);
+//     const std::string ellipsis = "…"; // Unicode ellipsis character
+//     uint16_t ellipsisWidth, ellipsisHeight;
+//     display.getTextSize(ellipsis, &ellipsisWidth, &ellipsisHeight, font);
 
-    // Make an educated guess about how many characters we can fit in the space
-    int estimatedEnd = static_cast<int>(str.size()) * maxWidth / initialWidth - 2;
-    display.getTextSize(Utf8Substr(str, 0, estimatedEnd), &w, &h, font);
-    // Search up or down until we find the right size
-    bool up = w + ellipsisWidth < maxWidth;
+//     // Make an educated guess about how many characters we can fit in the space
+//     int estimatedEnd = static_cast<int>(str.size()) * maxWidth / initialWidth - 2;
+//     display.getTextSize(Utf8Substr(str, 0, estimatedEnd), &w, &h, font);
+//     // Search up or down until we find the right size
+//     bool up = w + ellipsisWidth < maxWidth;
 
-    while (true) {
-        if (up) {
-            estimatedEnd++;
-        } else {
-            estimatedEnd--;
-        }
-        display.getTextSize(Utf8Substr(str, 0, estimatedEnd), &w, &h, font);
-        w += ellipsisWidth;
+//     while (true) {
+//         if (up) {
+//             estimatedEnd++;
+//         } else {
+//             estimatedEnd--;
+//         }
+//         display.getTextSize(Utf8Substr(str, 0, estimatedEnd), &w, &h, font);
+//         w += ellipsisWidth;
 
-        if (up && w > maxWidth) {
-            // Too big, back off one character
-            estimatedEnd--;
-            break;
-        };
-        if (!up && w < maxWidth) {
-            break;
-        };
-    }
+//         if (up && w > maxWidth) {
+//             // Too big, back off one character
+//             estimatedEnd--;
+//             break;
+//         };
+//         if (!up && w < maxWidth) {
+//             break;
+//         };
+//     }
 
-    return Utf8Substr(str, 0, estimatedEnd) + ellipsis;
-}
+//     return Utf8Substr(str, 0, estimatedEnd) + ellipsis;
+// }
 
-auto TruncateStringToFit(DisplaySystem &display, Font *font, const std::string &str,
-                         uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
-    return TruncateStringToFitEstimateImpl(display, font, str, maxWidth, initialWidth);
-}
+// auto TruncateStringToFit(DisplaySystem &display, Font *font, const std::string &str,
+//                          uint16_t maxWidth, uint16_t &initialWidth) -> std::string {
+//     return TruncateStringToFitEstimateImpl(display, font, str, maxWidth, initialWidth);
+// }

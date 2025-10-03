@@ -5,7 +5,7 @@
 #include <cinttypes>
 #include <vector>
 
-#include "UI/Fonts/FontDefs.hpp"
+#include "../FontDefs.hpp"
 
 //---  ESP_IDF
 // #include <esp_log.h>
@@ -20,24 +20,6 @@ const constexpr int K_BUFF_HEIGHT = 25;
 const constexpr int K_ORIGIN_X = 5;
 const constexpr int K_ORIGIN_Y = 19;
 const constexpr int KERNING_SIZE = 1;
-#endif
-
-// The following is used when testing the driver outside of this application
-#if IBMF_TESTING
-#define PROGMEM
-#include <cstdarg>
-#include <cstdio>
-#include <string>
-
-extern char *formatStr(const std::string &format, ...);
-
-#define log_i(format, ...) std::cout << "INFO: " << formatStr(format, ##__VA_ARGS__) << std::endl;
-#define log_w(format, ...)                                                                         \
-    std::cout << "WARNING: " << formatStr(format, ##__VA_ARGS__) << std::endl;
-#define log_e(format, ...) std::cout << "ERROR: " << formatStr(format, ##__VA_ARGS__) << std::endl;
-#define log_d(format, ...) std::cout << "DEBUG: " << formatStr(format, ##__VA_ARGS__) << std::endl;
-#else
-#include "sindarin-debug.h"
 #endif
 
 // clang-format off
@@ -98,11 +80,6 @@ namespace ibmf_defs {
 
 using namespace font_defs;
 
-#define LOGI(format, ...) log_i(format, ##__VA_ARGS__)
-#define LOGW(format, ...) log_w(format, ##__VA_ARGS__)
-#define LOGE(format, ...) log_e(format, ##__VA_ARGS__)
-#define LOGD(format, ...) log_d(format, ##__VA_ARGS__)
-
 // #define DEBUG_IBMF 1
 
 #ifdef DEBUG_IBMF
@@ -119,7 +96,7 @@ const constexpr int IBMF_DEBUG = 0;
 
 //----
 
-#include "UI/Fonts/FontDefs.hpp"
+#include "../FontDefs.hpp"
 
 const constexpr uint8_t IBMF_VERSION = 4; // Font format version
 const constexpr uint8_t MAX_FACE_COUNT = 3;

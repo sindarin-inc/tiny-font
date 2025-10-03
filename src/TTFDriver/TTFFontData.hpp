@@ -35,7 +35,7 @@ public:
         load();
 
         if (!initialized_) {
-            log_e("Font data not recognized!");
+            LOGE("Font data not recognized!");
         }
     }
 
