@@ -1,12 +1,10 @@
 #pragma once
 
 #include <inttypes.h>
+#include <cstdio>
 
 // These are the definitions that are common to both IBMF and TTF Font types
 
-namespace font_defs {
-
-#include <cstdio>
 #ifndef LOGI
 #define LOGI(format, ...) std::printf("INFO: " format "\n", ##__VA_ARGS__)
 #endif
@@ -19,6 +17,8 @@ namespace font_defs {
 #ifndef LOGD
 #define LOGD(format, ...) std::printf("DEBUG: " format "\n", ##__VA_ARGS__)
 #endif
+
+namespace font_defs {
 
 struct Dim {
     int16_t width;

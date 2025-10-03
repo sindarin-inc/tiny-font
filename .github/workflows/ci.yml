@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build-test:
+    name: Build and Test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: Install dependencies (Ubuntu)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libsdl2-dev libpng-dev cmake ninja-build
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew update
+          brew install sdl2 libpng cmake
+
+      - name: Build tests
+        run: |
+          cmake -S tests -B tests/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build tests/build -j
+
+      - name: Run tests
+        run: ctest --test-dir tests/build --output-on-failure
+
+      - name: Build IBMF example
+        run: |
+          cmake -S examples/SDL/IBMF -B examples/SDL/IBMF/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build examples/SDL/IBMF/build -j
+
+      - name: Build TTF example
+        run: |
+          cmake -S examples/SDL/TTF -B examples/SDL/TTF/build -DCMAKE_BUILD_TYPE=Release
+          cmake --build examples/SDL/TTF/build -j
+
+

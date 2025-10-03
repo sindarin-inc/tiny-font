@@ -23,7 +23,7 @@ target_compile_definitions(tests_ibmf PRIVATE GOLDEN_DIR="${CMAKE_CURRENT_LIST_D
 target_sources(tests_ibmf PRIVATE
     ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFont.cpp
     ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFontData.cpp
-    ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFfAce.cpp
+    ${TINY_FONT_ROOT}/src/IBMFDriver/IBMFFace.cpp
     ${TINY_FONT_ROOT}/src/IBMFDriver/RLEExtractor.cpp
 )
 add_test(NAME ibmf_render COMMAND tests_ibmf)
