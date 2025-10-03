@@ -78,44 +78,15 @@ int main(int argc, char **argv) {
 
     // Load IBMF font data and set up faces
     FontData fontData(SOLSANS_75_IBMF, SOLSANS_75_IBMF_LEN);
-    Font font0(fontData, 0);
-    Font font1(fontData, 1);
-    Font font2(fontData, 2);
-
     std::printf("IBMF faces: %d\n", fontData.getFaceCount());
-    std::printf("init: f0=%d f1=%d f2=%d\n", font0.isInitialized(), font1.isInitialized(), font2.isInitialized());
-
-    // Render a few strings
+    std::vector<Font> fonts;
     int x = 20;
     int y = 20;
-    std::string text0 = "Hello IBMF 0";
-    std::string text1 = "Hello IBMF 1";
-    std::string text2 = "Hello IBMF 2";
-
-    bool success = true;
-    success = font0.setDisplayPixelResolution(PixelResolution::ONE_BIT);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font0\n");
-    }
-    success = font1.setDisplayPixelResolution(PixelResolution::ONE_BIT);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font1\n");
-    }
-    success = font2.setDisplayPixelResolution(PixelResolution::ONE_BIT);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font2\n");
-    }
-
-    std::printf("lineHeights: f0=%d f1=%d f2=%d\n", font0.lineHeight(), font1.lineHeight(), font2.lineHeight());
-    font0.drawSingleLineOfText(canvas, Pos(x, y), text0, false);
-    y += font0.lineHeight() + 8;
-    font1.drawSingleLineOfText(canvas, Pos(x, y), text1, false);
-    y += font1.lineHeight() + 8;
-    font2.drawSingleLineOfText(canvas, Pos(x, y), text2, false);
-
-    // Force a single black pixel at top-left to sanity check the 1bpp->SDL conversion path
-    if (bufSize > 0) {
-        canvas.pixels[0] &= ~0x80;
+    for (int i = 0; i < fontData.getFaceCount(); i++) {
+        Font font0(fontData, i);
+        fonts.push_back(font0);
+        font0.drawSingleLineOfText(canvas, Pos(x, y), "Hello IBMF " + std::to_string(i), false);
+        y += font0.lineHeight() + 8;
     }
 
     // Upload to SDL texture

@@ -67,39 +67,19 @@ int main(int argc, char **argv) {
     canvas.pixels = new uint8_t[bufSize];
     std::memset(canvas.pixels, 255, bufSize); // white background
 
+    std::vector<Font> fonts;
     TTFNotoSansLight fontData;
-    Font font0(fontData, 18);
-    Font font1(fontData, 22);
-    Font font2(fontData, 28);
-
-    bool success = true;
-    success = font0.setDisplayPixelResolution(PixelResolution::EIGHT_BITS);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font0\n");
-    }
-    success = font1.setDisplayPixelResolution(PixelResolution::EIGHT_BITS);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font1\n");
-    }
-    success = font2.setDisplayPixelResolution(PixelResolution::EIGHT_BITS);
-    if (!success) {
-        std::printf("Failed to set display pixel resolution for font2\n");
-    }
-    font0.setFontPixelResolution(PixelResolution::EIGHT_BITS);
-    font1.setFontPixelResolution(PixelResolution::EIGHT_BITS);
-    font2.setFontPixelResolution(PixelResolution::EIGHT_BITS);
+    fonts.emplace_back(fontData, 18);
+    fonts.emplace_back(fontData, 22);
+    fonts.emplace_back(fontData, 28);
 
     int x = 20;
     int y = 20;
-    std::string text0 = "Hello TTF 18";
-    std::string text1 = "Hello TTF 22";
-    std::string text2 = "Hello TTF 28";
 
-    font0.drawSingleLineOfText(canvas, Pos(x, y), text0, false);
-    y += font0.lineHeight() + 8;
-    font1.drawSingleLineOfText(canvas, Pos(x, y), text1, false);
-    y += font1.lineHeight() + 8;
-    font2.drawSingleLineOfText(canvas, Pos(x, y), text2, false);
+    for (int i = 0; i < fonts.size(); i++) {
+        fonts[i].drawSingleLineOfText(canvas, Pos(x, y), "Hello TTF " + std::to_string(fonts[i].getFacePtSize()), false);
+        y += fonts[i].lineHeight() + 8;
+    }
 
     void *pixels = nullptr;
     int pitch = 0;

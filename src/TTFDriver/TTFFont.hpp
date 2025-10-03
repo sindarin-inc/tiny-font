@@ -171,6 +171,7 @@ public:
 
     auto drawSingleLineOfText(font_defs::Bitmap &canvas, font_defs::Pos pos,
                               const std::string &line, bool inverted) -> int;
+    auto getFacePtSize() const -> int { return size_; }
     auto getTextSize(const std::string &buffer) -> font_defs::Dim;
     auto getTextWidth(const std::string &buffer) -> int;
 
