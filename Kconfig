@@ -29,18 +29,22 @@ menu "Tiny Font Options"
     choice
 
         prompt "Default pixel resolution"
-        default TINYFONT_PIXEL_RESOLUTION_ONE_BIT
+        default TINYFONT_PIXEL_RESOLUTION_ONE_BIT if TINYFONT_IBMF
+        default TINYFONT_PIXEL_RESOLUTION_EIGHT_BIT if TINYFONT_TTF
 
         config TINYFONT_PIXEL_RESOLUTION_ONE_BIT
         bool "1 bit per pixel"
 
         config TINYFONT_PIXEL_RESOLUTION_EIGHT_BIT
+        depends on TINYFONT_TTF
         bool "8 bits per pixel"
 
         config TINYFONT_PIXEL_RESOLUTION_SIXTEEN_BIT
+        depends on TINYFONT_TTF
         bool "16 bits per pixel"
 
         config TINYFONT_PIXEL_RESOLUTION_TWENTY_FOUR_BIT
+        depends on TINYFONT_TTF
         bool "24 bits per pixel"
 
     endchoice
