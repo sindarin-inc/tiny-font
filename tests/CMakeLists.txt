@@ -57,3 +57,12 @@ target_sources(tests_ttf PRIVATE
 add_test(NAME ttf_render COMMAND tests_ttf)
 
 
+add_executable(tests_utf8 ${CMAKE_CURRENT_LIST_DIR}/TestUTF8Iterator.cpp)
+target_include_directories(tests_utf8 PRIVATE ${TINY_FONT_ROOT}/src ${CMAKE_CURRENT_LIST_DIR})
+target_link_libraries(tests_utf8 PRIVATE Catch2)
+target_compile_definitions(tests_utf8 PRIVATE
+    CONFIG_TINYFONT_PIXEL_RESOLUTION_ONE_BIT=1
+    CONFIG_TINYFONT_USE_SPIRAM=0
+)
+add_test(NAME utf8_iterator COMMAND tests_utf8)
+

@@ -71,8 +71,9 @@ const constexpr bool TINYFONT_PIXEL_RESOLUTION_OK =
      (DEFAULT_FONT_PIXEL_RESOLUTION == PixelResolution::ONE_BIT));
 
 #if CONFIG_TINYFONT_IBMF
-static_assert(DEFAULT_FONT_PIXEL_RESOLUTION == PixelResolution::ONE_BIT,
-              "For CONFIG_TINYFONT_IBMF, the DEFAULT_FONT_PIXEL_RESOLUTION must be equal to ONE_BIT!");
+static_assert(
+    DEFAULT_FONT_PIXEL_RESOLUTION == PixelResolution::ONE_BIT,
+    "For CONFIG_TINYFONT_IBMF, the DEFAULT_FONT_PIXEL_RESOLUTION must be equal to ONE_BIT!");
 #endif
 
 static_assert(

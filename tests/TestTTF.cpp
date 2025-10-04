@@ -54,7 +54,7 @@ TEST_CASE("TTF renders Tiny Font line for selected sizes matches golden", "[ttf]
 
         if (haveGolden && (gw != W || gh != H)) {
             REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
-            SUCCEED("Golden resized (TTF hello) "+goldenPath);
+            SUCCEED("Golden resized (TTF hello) " + goldenPath);
             continue;
         }
         if (!haveGolden) {

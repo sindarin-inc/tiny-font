@@ -20,4 +20,3 @@ jobs:
       - name: Check formatting
         run: |
           make format-check
-

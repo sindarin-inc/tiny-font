@@ -65,7 +65,7 @@ TEST_CASE("IBMF renders Tiny Font line for all faces matches golden", "[ibmf]") 
 
         if (haveGolden && (gw != W || gh != H)) {
             REQUIRE(Save8bpp(goldenPath.c_str(), W, H, buf.data()));
-            SUCCEED("Golden resized (IBMF hello) "+goldenPath);
+            SUCCEED("Golden resized (IBMF hello) " + goldenPath);
             continue;
         }
         if (!haveGolden) {
