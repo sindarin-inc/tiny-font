@@ -50,4 +50,31 @@ jobs:
           cmake -S examples/SDL/TTF -B examples/SDL/TTF/build -DCMAKE_BUILD_TYPE=Release
           cmake --build examples/SDL/TTF/build -j
 
+  build-idf:
+    name: "Build ESP-IDF examples"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # Tags from here: https://hub.docker.com/r/espressif/idf/tags
+        idf_version:
+          - v5.3.2
+          # - latest
+        target:
+          - ttf
+          - ibmf
 
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+
+      - name: esp-idf build
+        uses: espressif/esp-idf-ci-action@v1
+        with:
+          esp_idf_version: ${{ matrix.idf_version }}
+          target: esp32
+          path: ./examples/esp-idf
+          command: |
+            set -o pipefail
+            TARGET=${{ matrix.target }} make build | tee build-log.txt

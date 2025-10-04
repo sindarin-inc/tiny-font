@@ -1,0 +1,7 @@
+## IDF Component Manager Manifest File
+dependencies:
+  tiny-font:
+    path: "../../.."
+  freetype:
+    path: "../../../freetype"
+  idf: ">=5.3"
